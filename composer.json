@@ -1,0 +1,27 @@
+{
+    "name": "matthiasnoback/code-sniffer-sniff-dsl",
+    "description": "DSL for writing sniffs for PHP_CodeSniffer",
+    "license": "MIT",
+    "type": "library",
+    "keywords": ["code sniffer", "coding standard", "DSL"],
+    "homepage": "http://github.com/matthiasnoback/code-sniffer-sniff-dsl",
+    "authors": [
+        {
+            "name": "Matthias Noback",
+            "email": "matthiasnoback@gmail.com",
+            "homepage": "http://php-and-symfony.matthiasnoback.nl"
+        }
+    ],
+    "require": {
+        "beberlei/assert": "2.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~3.7"
+    },
+    "autoload": {
+        "psr-0": {
+            "Matthias\\Codesniffer\\Tests": "tests/",
+            "Matthias\\Codesniffer\\": "src/"
+        }
+    }
+}
