@@ -9,13 +9,17 @@ class Quantity implements ExpectationInterface
 {
     const ANY = null;
 
-    private $innerExpectation;
+    /**
+     * @var $innerExpectation ExpectationInterface[]
+     */
+    private $innerExpectations;
     private $minimum;
     private $maximum;
 
-    public function __construct(ExpectationInterface $innerExpectation, $minimum, $maximum)
+    public function __construct($innerExpectation, $minimum, $maximum)
     {
-        $this->innerExpectation = $innerExpectation;
+        // TODO this should be refactored, probably introduce an "iterator" expectation
+        $this->innerExpectations = is_array($innerExpectation) ? $innerExpectation : array($innerExpectation);
         $this->minimum = $minimum;
         $this->maximum = $maximum;
     }
@@ -26,9 +30,12 @@ class Quantity implements ExpectationInterface
 
         while (!$sequence->endOfSequence()) {
             try {
-                $this->innerExpectation->match($sequence);
+                foreach ($this->innerExpectations as $innerExpectation) {
+                    $innerExpectation->match($sequence);
+                    $sequence->next();
+                }
+
                 $occurrences++;
-                $sequence->next();
             } catch (ExpectationNotMatched $exception) {
                 break;
             }
