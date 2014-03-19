@@ -1,5 +1,7 @@
 # DSL for writing PHP_CodeSniffer sniffs
 
+[![Build Status](https://secure.travis-ci.org/matthiasnoback/code-sniffer-sniff-dsl.png)](http://travis-ci.org/matthiasnoback/code-sniffer-sniff-dsl)
+
 Using this library you can easily write code sniffs for [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer).
 When you don't use this DSL you will find yourself writing lots of specific, never reusable code.
 
