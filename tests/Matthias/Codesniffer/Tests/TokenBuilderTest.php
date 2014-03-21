@@ -9,43 +9,39 @@ class TokenBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_calculates_the_code_for_a_type_provided_as_string()
+    public function it_calculates_the_type_for_a_code()
     {
         $token = TokenBuilder::create('T_NAMESPACE')->build();
         $this->tokenHasCode(T_NAMESPACE, $token);
+        $this->tokenHasType('T_NAMESPACE', $token);
     }
 
     /**
      * @test
      */
-    public function it_fails_if_type_is_not_a_string()
+    public function it_fails_when_token_code_is_not_an_integer()
     {
         $this->setExpectedException('\InvalidArgumentException');
-        TokenBuilder::create(T_NAMESPACE);
+        TokenBuilder::create('not an integer')->build();
     }
 
     /**
      * @test
      */
-    public function it_fails_if_type_does_not_start_with_t_underscore()
+    public function it_fails_when_token_code_is_unknown()
     {
         $this->setExpectedException('\InvalidArgumentException');
 
-        TokenBuilder::create('PATHINFO_EXTENSION');
-    }
-
-    /**
-     * @test
-     */
-    public function it_fails_if_type_constant_is_not_defined()
-    {
-        $this->setExpectedException('\InvalidArgumentException');
-
-        TokenBuilder::create('T_UNDEFINED_CONSTANT');
+        TokenBuilder::create(12345)->build();
     }
 
     private function tokenHasCode($expectedCode, array $token)
     {
         $this->assertSame($expectedCode, $token['code']);
+    }
+
+    private function tokenHasType($expectedType, array $token)
+    {
+        $this->assertSame($expectedType, $token['type']);
     }
 }

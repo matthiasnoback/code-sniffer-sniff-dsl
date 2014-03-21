@@ -12,10 +12,10 @@ class ExactMatchTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider tokensProvider
      */
-    public function test_matcher($tokens, $tokenIndex, $expectedToMatch)
+    public function it_matches_exactly_one_token($tokens, $tokenIndex, $expectedToMatch)
     {
         $sequence = new ForwardSequence();
-        $sequence->addExpectation(new ExactMatch(T_WHITESPACE, "\n"));
+        $sequence->addExpectation(new ExactMatch(T_WHITESPACE));
 
         $this->assertSame($expectedToMatch, $sequence->matches($tokens, $tokenIndex));
     }
@@ -26,8 +26,8 @@ class ExactMatchTest extends \PHPUnit_Framework_TestCase
             // next token is indeed a new line
             array(
                 array(
-                    TokenBuilder::createOpenTag()->build(),
-                    TokenBuilder::createNewLine()->build()
+                    TokenBuilder::create('T_OPEN_TAG')->build(),
+                    TokenBuilder::create('T_WHITESPACE')->build()
                 ),
                 0,
                 true
@@ -35,8 +35,8 @@ class ExactMatchTest extends \PHPUnit_Framework_TestCase
             // next token is not a new line
             array(
                 array(
-                    TokenBuilder::createOpenTag()->build(),
-                    TokenBuilder::createClass()->build(),
+                    TokenBuilder::create('T_OPEN_TAG')->build(),
+                    TokenBuilder::create('T_CLASS')->build()
                 ),
                 0,
                 false
@@ -44,7 +44,7 @@ class ExactMatchTest extends \PHPUnit_Framework_TestCase
             // next token does not exist
             array(
                 array(
-                    TokenBuilder::createOpenTag()->build(),
+                    TokenBuilder::create('T_OPEN_TAG')->build()
                 ),
                 0,
                 false

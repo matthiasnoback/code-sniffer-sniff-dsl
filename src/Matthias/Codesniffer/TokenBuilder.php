@@ -25,26 +25,6 @@ class TokenBuilder
         return new static($type);
     }
 
-    public static function createNewLine()
-    {
-        return static::create('T_WHITESPACE')->setContent("\n");
-    }
-
-    public static function createDocComment()
-    {
-        return static::create('T_DOC_COMMENT');
-    }
-
-    public static function createOpenTag()
-    {
-        return static::create('T_OPEN_TAG');
-    }
-
-    public static function createClass()
-    {
-        return static::create('T_CLASS');
-    }
-
     public function setContent($content)
     {
         $this->content = $content;
@@ -67,9 +47,9 @@ class TokenBuilder
 
     private function setType($type)
     {
-        Assertion::string($type);
-        Assertion::startsWith($type, 'T_');
-        Assertion::true(defined($type));
+        Assertion::string($type, 'Token type should be a string');
+        Assertion::startsWith($type, 'T_', 'Token type should start with T_');
+        Assertion::true(defined($type), 'Token type should be the name of a defined constant');
 
         $this->type = $type;
         $this->code = constant($type);

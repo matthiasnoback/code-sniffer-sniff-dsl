@@ -31,6 +31,7 @@ class ExactMatch implements ExpectationInterface
 
         if ($nextToken['code'] === $this->code) {
             if ($this->content === null || $this->content === $nextToken['content']) {
+                $sequence->next();
                 return;
             }
         }

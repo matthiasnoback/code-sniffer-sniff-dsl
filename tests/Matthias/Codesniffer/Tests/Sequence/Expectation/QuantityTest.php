@@ -14,8 +14,14 @@ class QuantityTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider tokensProvider
      */
-    public function test_matcher(ExpectationInterface $innerExpectation, $minimum, $maximum, array $tokens, $tokenIndex, $expectedToMatch)
-    {
+    public function it_matches_a_number_of_tokens(
+        ExpectationInterface $innerExpectation,
+        $minimum,
+        $maximum,
+        array $tokens,
+        $tokenIndex,
+        $expectedToMatch
+    ) {
         $sequence = new ForwardSequence();
         $sequence->addExpectation(new Quantity($innerExpectation, $minimum, $maximum));
 
@@ -31,9 +37,9 @@ class QuantityTest extends \PHPUnit_Framework_TestCase
                 2,
                 2,
                 array(
-                    TokenBuilder::createOpenTag()->build(),
-                    TokenBuilder::createNewLine()->build(),
-                    TokenBuilder::createNewLine()->build()
+                    TokenBuilder::create('T_OPEN_TAG')->build(),
+                    TokenBuilder::create('T_WHITESPACE')->setContent("\n")->build(),
+                    TokenBuilder::create('T_WHITESPACE')->setContent("\n")->build()
                 ),
                 0,
                 true
@@ -44,10 +50,10 @@ class QuantityTest extends \PHPUnit_Framework_TestCase
                 1,
                 2,
                 array(
-                    TokenBuilder::createOpenTag()->build(),
+                    TokenBuilder::create('T_OPEN_TAG')->build(),
                     TokenBuilder::create('T_NAMESPACE')->build(),
-                    TokenBuilder::createNewLine()->build(),
-                    TokenBuilder::createClass()->build(),
+                    TokenBuilder::create('T_WHITESPACE')->setContent("\n")->build(),
+                    TokenBuilder::create('T_CLASS')->build(),
                 ),
                 1,
                 true
@@ -58,10 +64,10 @@ class QuantityTest extends \PHPUnit_Framework_TestCase
                 2,
                 2,
                 array(
-                    TokenBuilder::createOpenTag()->build(),
-                    TokenBuilder::createNewLine()->build(),
-                    TokenBuilder::createNewLine()->build(),
-                    TokenBuilder::createNewLine()->build()
+                    TokenBuilder::create('T_OPEN_TAG')->build(),
+                    TokenBuilder::create('T_WHITESPACE')->setContent("\n")->build(),
+                    TokenBuilder::create('T_WHITESPACE')->setContent("\n")->build(),
+                    TokenBuilder::create('T_WHITESPACE')->setContent("\n")->build(),
                 ),
                 0,
                 false
@@ -72,8 +78,8 @@ class QuantityTest extends \PHPUnit_Framework_TestCase
                 null,
                 2,
                 array(
-                    TokenBuilder::createOpenTag()->build(),
-                    TokenBuilder::createClass()->build()
+                    TokenBuilder::create('T_OPEN_TAG')->build(),
+                    TokenBuilder::create('T_CLASS')->build(),
                 ),
                 0,
                 true
@@ -84,11 +90,11 @@ class QuantityTest extends \PHPUnit_Framework_TestCase
                 2,
                 null,
                 array(
-                    TokenBuilder::createOpenTag()->build(),
-                    TokenBuilder::createNewLine()->build(),
-                    TokenBuilder::createNewLine()->build(),
-                    TokenBuilder::createNewLine()->build(),
-                    TokenBuilder::createNewLine()->build()
+                    TokenBuilder::create('T_OPEN_TAG')->build(),
+                    TokenBuilder::create('T_WHITESPACE')->setContent("\n")->build(),
+                    TokenBuilder::create('T_WHITESPACE')->setContent("\n")->build(),
+                    TokenBuilder::create('T_WHITESPACE')->setContent("\n")->build(),
+                    TokenBuilder::create('T_WHITESPACE')->setContent("\n")->build(),
                 ),
                 0,
                 true

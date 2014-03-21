@@ -19,6 +19,13 @@ abstract class AbstractSequence implements MatcherInterface, SequenceInterface
 
     abstract protected function getNextIndex();
 
+    public function __construct(array $expectations = array())
+    {
+        foreach ($expectations as $expectation) {
+            $this->addExpectation($expectation);
+        }
+    }
+
     public function addExpectation(ExpectationInterface $expectation)
     {
         $this->expectations[] = $expectation;
