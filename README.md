@@ -22,44 +22,41 @@ class FileCommentMatcher implements MatcherInterface
 {
     public function matches(array $tokens, $tokenIndex)
     {
-        if (!$this->isAtBeginningOfDocument($tokens, $tokenIndex)) {
-            return false;
-        }
+        $forwardSequence = SequenceBuilder::create()
+            ->lookingForward()
+            ->expect()
+                ->token(T_WHITESPACE, ' ') // space
+                ->token(T_STRING) // namespace root
+                ->quantity() // sub namespaces
+                    ->any()
+                    ->succeeding()
+                        ->token(T_NS_SEPARATOR)
+                        ->token(T_STRING)
+                    ->end()
+                ->end()
+                ->token(T_SEMICOLON) // end of namespace declaration
+                ->quantity() // two blank lines
+                    ->exactly(2)
+                    ->token(T_WHITESPACE, "\n")
+                ->end()
+            ->end()
+            ->build();
 
-        if (!$this->isFollowedByTwoNewLines($tokens, $tokenIndex)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function isAtBeginningOfDocument(array $tokens, $tokenIndex)
-    {
-        $sequence = SequenceBuilder::create()
+        $backwardSequence = SequenceBuilder::create()
             ->lookingBackward()
             ->expect()
-                ->any()
-                ->token(T_WHITESPACE, "\n")
-            ->then()
-                ->exactly(1)
-                ->token(T_OPEN_TAG)
+                ->quantity()
+                    // the first new line is part of the PHP open tag
+                    ->exactly(1)
+                    ->token(T_WHITESPACE, "\n")
+                ->end()
+            ->end()
             ->build();
 
-        return $sequence->matches($tokens, $tokenIndex);
-    }
+        $oneBlankLineAfterNamespace = $forwardSequence->matches($tokens, $tokenIndex);
+        $oneBlankLineBeforeNamespace = $backwardSequence->matches($tokens, $tokenIndex);
 
-    private function isFollowedByTwoNewLines(array $tokens, $tokenIndex)
-    {
-        $sequence = SequenceBuilder::create()
-            ->expect()
-                ->any()
-                ->token(T_DOC_COMMENT)
-            ->then()
-                ->atLeast(2)
-                ->tokens(T_WHITESPACE, "\n")
-            ->build();
-
-        return $sequence->matches($tokens, $tokenIndex);
+        return $oneBlankLineBeforeNamespace && $oneBlankLineAfterNamespace;
     }
 }
 ```
