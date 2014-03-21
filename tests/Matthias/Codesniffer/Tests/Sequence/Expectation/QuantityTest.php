@@ -31,7 +31,7 @@ class QuantityTest extends \PHPUnit_Framework_TestCase
     public function tokensProvider()
     {
         return array(
-            // expect exactly two new lines
+            // expect exactly 2 new lines, get 2 new lines
             array(
                 new ExactMatch(T_WHITESPACE, "\n"),
                 2,
@@ -44,7 +44,7 @@ class QuantityTest extends \PHPUnit_Framework_TestCase
                 0,
                 true
             ),
-            // expect at least 1, at most 2 new lines
+            // expect at least 1, at most 2 new lines, get 1 line
             array(
                 new \Matthias\Codesniffer\Sequence\Expectation\ExactMatch(T_WHITESPACE, "\n"),
                 1,
@@ -58,7 +58,7 @@ class QuantityTest extends \PHPUnit_Framework_TestCase
                 1,
                 true
             ),
-            // expect at most two new lines
+            // expect at most two new lines, get 3 lines
             array(
                 new \Matthias\Codesniffer\Sequence\Expectation\ExactMatch(T_WHITESPACE, "\n"),
                 2,
@@ -72,7 +72,7 @@ class QuantityTest extends \PHPUnit_Framework_TestCase
                 0,
                 false
             ),
-            // expect at most two new lines, but no minimum
+            // expect at most 2 new lines, but no minimum, get no lines
             array(
                 new ExactMatch(T_WHITESPACE, "\n"),
                 null,
@@ -84,7 +84,7 @@ class QuantityTest extends \PHPUnit_Framework_TestCase
                 0,
                 true
             ),
-            // expect at least two new lines, but no minimum
+            // expect at least 2 new lines, but no minimum, get 4 lines
             array(
                 new \Matthias\Codesniffer\Sequence\Expectation\ExactMatch(T_WHITESPACE, "\n"),
                 2,
@@ -98,6 +98,18 @@ class QuantityTest extends \PHPUnit_Framework_TestCase
                 ),
                 0,
                 true
+            ),
+            // expect at least 2 new lines, get 1 line
+            array(
+                new \Matthias\Codesniffer\Sequence\Expectation\ExactMatch(T_WHITESPACE, "\n"),
+                2,
+                null,
+                array(
+                    TokenBuilder::create('T_OPEN_TAG')->build(),
+                    TokenBuilder::create('T_WHITESPACE')->setContent("\n")->build(),
+                ),
+                0,
+                false
             ),
         );
     }

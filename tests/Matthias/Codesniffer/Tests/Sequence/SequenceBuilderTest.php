@@ -3,8 +3,10 @@
 namespace Matthias\Codesniffer\Tests\Sequence;
 
 use Matthias\Codesniffer\Sequence\BackwardSequence;
+use Matthias\Codesniffer\Sequence\Expectation\Choice;
 use Matthias\Codesniffer\Sequence\Expectation\ExactMatch;
 use Matthias\Codesniffer\Sequence\Expectation\Quantity;
+use Matthias\Codesniffer\Sequence\Expectation\Succeeding;
 use Matthias\Codesniffer\Sequence\ForwardSequence;
 use Matthias\Codesniffer\Sequence\SequenceBuilder;
 
@@ -18,13 +20,16 @@ class SequenceBuilderTest extends \PHPUnit_Framework_TestCase
         $sequence = SequenceBuilder::create()
             ->lookingForward()
             ->expect()
-            ->exactly(2)
-            ->tokens(T_WHITESPACE, "\n")
+                ->quantity()
+                    ->exactly(2)
+                    ->token(T_WHITESPACE, "\n")
+                ->end()
+            ->end()
             ->build();
 
-        $expectedSequence = new ForwardSequence();
-        $expectedSequence
-            ->addExpectation(new Quantity(new ExactMatch(T_WHITESPACE, "\n"), 2, 2));
+        $expectedSequence = new ForwardSequence(array(
+            new Quantity(new ExactMatch(T_WHITESPACE, "\n"), 2, 2)
+        ));
 
         $this->assertEquals($expectedSequence, $sequence);
     }
@@ -37,13 +42,16 @@ class SequenceBuilderTest extends \PHPUnit_Framework_TestCase
         $sequence = SequenceBuilder::create()
             ->lookingBackward()
             ->expect()
-            ->atLeast(3)
-            ->tokens(T_WHITESPACE, "\n")
+                ->quantity()
+                    ->atLeast(3)
+                    ->token(T_WHITESPACE, "\n")
+                ->end()
+            ->end()
             ->build();
 
-        $expectedSequence = new BackwardSequence();
-        $expectedSequence
-            ->addExpectation(new Quantity(new ExactMatch(T_WHITESPACE, "\n"), 3, null));
+        $expectedSequence = new BackwardSequence(array(
+            new Quantity(new ExactMatch(T_WHITESPACE, "\n"), 3, null)
+        ));
 
         $this->assertEquals($expectedSequence, $sequence);
     }
@@ -56,13 +64,16 @@ class SequenceBuilderTest extends \PHPUnit_Framework_TestCase
         $sequence = SequenceBuilder::create()
             ->lookingBackward()
             ->expect()
-            ->atMost(2)
-            ->tokens(T_WHITESPACE, "\n")
+                ->quantity()
+                    ->atMost(2)
+                    ->token(T_WHITESPACE, "\n")
+                ->end()
+            ->end()
             ->build();
 
-        $expectedSequence = new BackwardSequence();
-        $expectedSequence
-            ->addExpectation(new Quantity(new ExactMatch(T_WHITESPACE, "\n"), null, 2));
+        $expectedSequence = new BackwardSequence(array(
+            new Quantity(new ExactMatch(T_WHITESPACE, "\n"), null, 2)
+        ));
 
         $this->assertEquals($expectedSequence, $sequence);
     }
@@ -75,9 +86,12 @@ class SequenceBuilderTest extends \PHPUnit_Framework_TestCase
         $sequence = SequenceBuilder::create()
             ->lookingBackward()
             ->expect()
-            ->atLeast(2)
-            ->atMost(4)
-            ->tokens(T_WHITESPACE, "\n")
+                ->quantity()
+                    ->atLeast(2)
+                    ->atMost(4)
+                    ->token(T_WHITESPACE, "\n")
+                ->end()
+            ->end()
             ->build();
 
         $expectedSequence = new BackwardSequence();
@@ -94,8 +108,11 @@ class SequenceBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $sequence = SequenceBuilder::create()
             ->expect()
-            ->any()
-            ->token(T_WHITESPACE, "\n")
+                ->quantity()
+                    ->any()
+                    ->token(T_WHITESPACE, "\n")
+                ->end()
+            ->end()
             ->build();
 
         $expectedSequence = new ForwardSequence();
@@ -112,16 +129,21 @@ class SequenceBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $sequence = SequenceBuilder::create()
             ->expect()
-            ->any()
-            ->token(T_WHITESPACE, "\n")
-            ->then()
-            ->exactly(2)
-            ->tokens(T_NAMESPACE)
+                ->quantity()
+                    ->any()
+                    ->token(T_WHITESPACE, "\n")
+                ->end()
+                ->quantity()
+                    ->exactly(2)
+                    ->token(T_NAMESPACE)
+                ->end()
+            ->end()
             ->build();
 
-        $expectedSequence = new ForwardSequence();
-        $expectedSequence->addExpectation(new Quantity(new ExactMatch(T_WHITESPACE, "\n"), null, null));
-        $expectedSequence->addExpectation(new Quantity(new ExactMatch(T_NAMESPACE), 2, 2));
+        $expectedSequence = new ForwardSequence(array(
+            new Quantity(new ExactMatch(T_WHITESPACE, "\n"), null, null),
+            new Quantity(new ExactMatch(T_NAMESPACE), 2, 2)
+        ));
 
         $this->assertEquals($expectedSequence, $sequence);
     }
@@ -129,7 +151,73 @@ class SequenceBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_fails_when_no_expectation_has_been_defined()
+    public function it_creates_a_sequence_with_succeeding_expectations()
+    {
+        $sequence = SequenceBuilder::create()
+            ->expect()
+                ->quantity()
+                    ->atLeast(1)
+                    ->atMost(2)
+                    ->succeeding()
+                        ->token(T_NS_SEPARATOR)
+                        ->token(T_STRING)
+                    ->end()
+                ->end()
+            ->end()
+            ->build();
+
+        $expectedSequence = new ForwardSequence(array(
+            new Quantity(
+                new Succeeding(
+                    array(
+                        new ExactMatch(T_NS_SEPARATOR),
+                        new ExactMatch(T_STRING)
+                    )
+                ),
+                1,
+                2
+            )
+        ));
+
+        $this->assertEquals($expectedSequence, $sequence);
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_a_sequence_with_choice_expectations()
+    {
+        $sequence = SequenceBuilder::create()
+            ->expect()
+                ->quantity()
+                    ->choice()
+                        ->token(T_NS_SEPARATOR)
+                        ->token(T_STRING)
+                    ->end()
+                ->end()
+            ->end()
+            ->build();
+
+        $expectedSequence = new ForwardSequence(array(
+            new Quantity(
+                new Choice(
+                    array(
+                        new ExactMatch(T_NS_SEPARATOR),
+                        new ExactMatch(T_STRING)
+                    )
+                ),
+                null,
+                null
+            )
+        ));
+
+        $this->assertEquals($expectedSequence, $sequence);
+    }
+
+    /**
+     * @test
+     */
+    public function it_fails_when_no_expectation_have_been_defined()
     {
         $this->setExpectedException('\LogicException');
 

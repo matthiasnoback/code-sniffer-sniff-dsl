@@ -35,6 +35,18 @@ class TokenBuilderTest extends \PHPUnit_Framework_TestCase
         TokenBuilder::create(12345)->build();
     }
 
+    /**
+     * @test
+     */
+    public function it_can_have_content()
+    {
+        $content = "\n";
+
+        $token = TokenBuilder::create('T_WHITESPACE')->setContent($content)->build();
+
+        $this->tokenHasContent($content, $token);
+    }
+
     private function tokenHasCode($expectedCode, array $token)
     {
         $this->assertSame($expectedCode, $token['code']);
@@ -43,5 +55,10 @@ class TokenBuilderTest extends \PHPUnit_Framework_TestCase
     private function tokenHasType($expectedType, array $token)
     {
         $this->assertSame($expectedType, $token['type']);
+    }
+
+    private function tokenHasContent($expectedContent, array $token)
+    {
+        $this->assertSame($expectedContent, $token['content']);
     }
 }

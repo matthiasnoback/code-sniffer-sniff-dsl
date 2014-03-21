@@ -52,4 +52,25 @@ class BackwardSequenceTest extends \PHPUnit_Framework_TestCase
             ),
         );
     }
+
+
+    /**
+     * @test
+     */
+    public function it_fails_when_next_is_called_but_end_of_sequence_is_reached()
+    {
+        $forwardSequence = new BackwardSequence();
+        $this->setExpectedException('Matthias\Codesniffer\Sequence\Exception\EndOfSequence');
+        $forwardSequence->next();
+    }
+
+    /**
+     * @test
+     */
+    public function it_fails_when_peek_is_called_but_end_of_sequence_is_reached()
+    {
+        $forwardSequence = new BackwardSequence();
+        $this->setExpectedException('Matthias\Codesniffer\Sequence\Exception\EndOfSequence');
+        $forwardSequence->peek();
+    }
 }

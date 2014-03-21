@@ -14,8 +14,8 @@ abstract class AbstractSequence implements MatcherInterface, SequenceInterface
      */
     private $expectations = array();
 
-    protected $tokens;
-    protected $currentIndex;
+    protected $tokens = array();
+    protected $currentIndex = 0;
 
     abstract protected function getNextIndex();
 
@@ -70,9 +70,7 @@ abstract class AbstractSequence implements MatcherInterface, SequenceInterface
     {
         $nextIndex = $this->getNextIndex();
 
-        if (!isset($this->tokens[$nextIndex])) {
-            throw new EndOfSequence();
-        }
+        $this->validateIndex($nextIndex);
 
         $this->currentIndex = $nextIndex;
 

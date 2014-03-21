@@ -16,11 +16,6 @@ class ExactMatch implements ExpectationInterface
         $this->content = $content;
     }
 
-    public static function create($code, $content = null)
-    {
-        return new static($code, $content);
-    }
-
     public function match(SequenceInterface $sequence)
     {
         if ($sequence->endOfSequence()) {
